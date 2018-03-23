@@ -1,0 +1,73 @@
+
+div {
+	vertical-align:top;
+	text-align: left;
+}
+
+
+h1{
+	font-size:25pt;
+    text-align: right;
+}
+
+
+table {
+    border-collapse: collapse;
+    /* width: 100% */
+	height:100%;
+}
+
+table, th, td {
+    border: 1px solid black;text-align: center;
+}
+
+* {
+	font-family: Helvetica;
+	font-variant: default;
+}
+
+.id_Rules.content {font-size:10pt}
+
+.id_floatBar .object.content {box-shadow:none;}
+.id_floatBar .lvl_2.frame {display:inline-block; padding:2; position:relative;margin-right:3em}
+.id_floatBar .lvl_3.frame {display:inline; padding:0; position:relative; }
+
+.id___main__.content {
+	display: flex;
+	flex-flow: column;
+	height: 100%;
+}
+
+
+/* .id_floatBar.frame {height:8.5em} */
+.id_floatBar.frame {flex:0 1 auto}
+/* .table.frame {height:70vh;overflow:auto} */
+.table.content {
+	height:70vh;
+	flex:1 1 auto
+}
+
+p.redtext {
+        color: red;
+        font-weight: bold;
+}
+
+p.bluetext {
+        color: blue;
+        font-weight: bold;
+}
+
+p.greentext {
+        color: limegreen;
+        font-weight: bold;
+}
+
+p.orangetext {
+        color: darkorange;
+        font-weight: bold;
+}
+
+p.yellowhighlight {
+        background-color:  #FFFF99;
+}
+
