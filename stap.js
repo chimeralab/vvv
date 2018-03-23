@@ -1216,7 +1216,7 @@ var gui=(function(){
 								},
 								'js');
 					}else if(data.client[i]=='userAgent'){
-						reply.userAgent=clientInformation.userAgent;
+						reply.userAgent=navigator.userAgent;
 					}
 				}
 				if(Object.keys(reply).length)
