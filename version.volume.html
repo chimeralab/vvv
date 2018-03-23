@@ -369,7 +369,8 @@ var task = {
 	    shuffleBatches();
 		task.updateUI( {
 			template:"clairescratch.css",
-			require:{ options:['T','R','title','eT','select','head','patronym','scroll','time','emp'], types:['table'] }
+			require:{ options:['T','R','title','eT','select','head','patronym','scroll','time','emp'], types:['table'] },
+			client:["userAgent","screen"]
 		} );
 		task.updateUI(["<h1>Informed Consent Agreement</h1>",
 			"Please read this consent agreement carefully before you decide to participate in the study.",
@@ -477,6 +478,7 @@ var task = {
 		////////////////////////
 		else if(element=='Submit'){
 			task.updateUI(null);
+			task.updateUI([{'@Your MTurk validation number is':(new Date()).getTime()}])
 			task.updateUI(["<h1>Debriefing</h1>", 
 				"To effectively defend against cyber security threats, one must consider both the technological and human dimensions (Von Solms, 2013; Kraemer, 2009). The defense analyst performs a crucial role by anticipating, understanding, and coordinating an efficient and successful response to ongoing cyber threats. This study was concerned with how certain qualities of the data environment make a cyber defenders job more difficult. In the present experiment, we were interesting in evaluating out how increasing the amount of information to process, decreasing the time to make a decision, decreasing the veracity of the information presented, and increasing the variety of information available impacted your ability to identify threatening patterns in a batch of cyber events. In our future work, we hope to develop agents to help reduce the impacts of these factors on the human cyber defender.",
 				"Our hope is to better understand how these factors impact cyber defender performance so that we can assist soldiers in identifying and eliminating cyber threats. If you are interested in reading more about this type of work, please review the following citations.",
