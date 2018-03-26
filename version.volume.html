@@ -370,7 +370,8 @@ var task = {
 		task.updateUI( {
 			template:"clairescratch.css",
 			require:{ options:['T','R','title','eT','select','head','patronym','scroll','time','emp'], types:['table'] },
-			client:["userAgent","screen"]
+			client:["userAgent","screen"],
+			date:(new Date()).toString('YYYYMDhhmmss')
 		} );
 		task.updateUI(["<h1>Informed Consent Agreement</h1>",
 			"Please read this consent agreement carefully before you decide to participate in the study.",

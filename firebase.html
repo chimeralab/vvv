@@ -1,0 +1,105 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<html><head>
+
+
+<script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBtfGeqBIXdFmaFkmjY004cvb3SWOKyy-c",
+    authDomain: "vvve-56dc2.firebaseapp.com",
+    databaseURL: "https://vvve-56dc2.firebaseio.com",
+    projectId: "vvve-56dc2",
+    storageBucket: "vvve-56dc2.appspot.com",
+    messagingSenderId: "441698672673"
+  };
+  firebase.initializeApp(config);
+</script>
+
+
+<script src="stap.js"></script>
+<script>
+
+function button(id){return {['@'+id]:false}};
+
+var task = {
+	
+	data:{},
+	usr:'chimeralabmturk@gmail.com',
+	pwd:'',
+	
+	start: function(){
+		task.auth=firebase.auth();
+		task.updateUI([ {"@Username":task.usr,eT:3}, {"@Password":"",eT:3,pwd:'c%'}, {'@Login':false} ]);
+	},
+	
+	userAction: function(time,id,val){
+		if(id==='Username'){
+			task.usr=val;
+		}else if(id==='Password'){
+			task.pwd=val;
+		}else if(id==='Login'){
+			task.auth.signInWithEmailAndPassword(task.usr,task.pwd).
+				then(task.loggedIn,e=>{
+					task.updateUI(['Sign-in failed. Please check your username and password.']);
+				});
+		}else if(id==='Back'){
+			task.loggedIn();
+		}else if(task.auth){
+			if(id in task.data){
+				task.showLogs(id);
+			}else if(id in task.data[task.tid]){
+				task.showLog(id);
+			}
+		}
+	},
+	
+	loggedIn: function(){
+		task.pwd='';
+		task.updateUI(null);
+		firebase.database().ref('/tasks').once('value').then(x=>{
+			task.data=x.val();
+			task.updateUI(Object.keys(task.data).map(button));
+		});
+	},
+	
+	showLogs: function(tid){
+		task.tid=tid;
+		task.updateUI(null);
+		task.updateUI([
+			button('Back'),
+			{'@Log Files':Object.keys(task.data[tid]).map(button)}
+		]);
+	},
+	
+	showLog: function(sid){
+		var txt='time\tid\tval\r\n'+task.data[task.tid][sid]
+			.filter(x=>typeof(x)==='object' && ('<' in x))
+			.map(x=>JSON.parse(x['<']).join('\t'))
+			.join("\r\n");
+		download(txt, task.tid+'.'+sid+".txt", 'text/plain');
+	}
+	
+}
+
+function download(data, filename, type) {
+    var file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);  
+        }, 0); 
+    }
+}
+</script>
+</head><body></body></html>
