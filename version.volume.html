@@ -356,7 +356,11 @@ function shuffleBatches() {
 }
 
 
-function button(name){return {['@'+name]:false};}
+function button(name,enabled){
+	var b={['@'+name]:false};
+	if(enabled!==undefined)b.eB=enabled;
+	return b;
+}
 
 
 
@@ -375,15 +379,15 @@ var task = {
 		} );
 		task.updateUI(["<h1>Informed Consent Agreement</h1>",
 			"Please read this consent agreement carefully before you decide to participate in the study.",
-			"Purpose of the research study: The purpose of the study is to investigate how humans recognize patterns of interest.",
-			"What you will do in the study: If you choose to participate in this study, you will be asked to identify malicious versus benign patterns in a series of datasets using pre-established rules. The information you provide is anonymous and you are free to stop the experiment at any time.",
-			"Time required: The study will require about 25-30 minutes of your time.",
-			"Risks: There are no risks associated with this study. The information you will provide is not sensitive and a loss of confidentiality poses no threats.",
-			"Benefits: There are no direct benefits to you for participating in this research study. The study may help us understand what factors impair pattern recognition.",
-			"Confidentiality: Participant data will be stored on Amazon Firebase, a secure cloud-based platform. Only mTurk-assigned worker IDs---which consist of random characters (e.g. A1235875436)---will be stored for payment purposes. No personally identifying information (e.g., names, emails, addresses) will be collected. The information that you give in the study will be handled confidentially. Your data will be anonymous which means that your name will not be collected or linked to the data.",
-			"Voluntary participation: Your participation in the study is completely voluntary.",		
-			"Right to withdraw from the study: You have the right to withdraw from the study at any time without penalty. How to withdraw from the study: If you want to withdraw from the study, you may simply close the study. There is no penalty for withdrawing. You will still receive full credit for the study. If you would like to withdraw after your materials have been submitted, please contact Claire La Fleur (claire.g.lafleur.ctr@mail.mil).",	
-			"Payment: You will receive a payment of $3.00 for participating in the study.",	
+			"Purpose of the research study: The purpose of the study is to investigate how humans recognize patterns of interest.",
+			"What you will do in the study: If you choose to participate in this study, you will be asked to identify malicious versus benign patterns in a series of datasets using pre-established rules. The information you provide is anonymous and you are free to stop the experiment at any time.",
+			"Time required: The study will require about 25-30 minutes of your time.",
+			"Risks: There are no risks associated with this study. The information you will provide is not sensitive and a loss of confidentiality poses no threats.",
+			"Benefits: There are no direct benefits to you for participating in this research study. The study may help us understand what factors impair pattern recognition.",
+			"Confidentiality: Participant data will be stored on Amazon Firebase, a secure cloud-based platform. Only mTurk-assigned worker IDs---which consist of random characters (e.g. A1235875436)---will be stored for payment purposes. No personally identifying information (e.g., names, emails, addresses) will be collected. The information that you give in the study will be handled confidentially. Your data will be anonymous which means that your name will not be collected or linked to the data.",
+			"Voluntary participation: Your participation in the study is completely voluntary.",		
+			"Right to withdraw from the study: You have the right to withdraw from the study at any time without penalty. How to withdraw from the study: If you want to withdraw from the study, you may simply close the study. There is no penalty for withdrawing. You will still receive full credit for the study. If you would like to withdraw after your materials have been submitted, please contact Claire La Fleur (claire.g.lafleur.ctr@mail.mil).",	
+			"Payment: You will receive a payment of $3.00 for participating in the study.",	
 			"If you have questions about the study, contact:",	
 			"Claire-Genevieve La Fleur (claire.g.lafleur.ctr@mail.mil)",	
 			"Bldg. 519, Aberdeen Proving Ground",	
@@ -511,7 +515,7 @@ var task = {
 						"3. Destination Countries: Russia, China",
 						"4. Alerts including suspicious, encrypted, exploit, and virus"
 					]},
-					button(nextButtons[datasetOrder.indexOf(element)])
+					button(task.nextButton,0)
 				], title:''}, 
 				{['@'+element]:[
 				["Time Stamp","Source Port","Destination Countries","Alert","Threat","No Threat"], 
@@ -524,9 +528,8 @@ var task = {
 					[ task.formatRow(datasets[element][i], myHighlights[element].indexOf(i) ) ] 
 				}]);
 			}
-			
 		}
-				
+		
 		//added 5 lines below; also added line 506 to create the task.currentResponses array; also changed the button to be disabled to start, and enabled when all responses are there
 		else if(task.currentResponses && element.constructor===Array){		//
 			task.currentResponses[element[1]-1]=value;
@@ -535,6 +538,9 @@ var task = {
 			else
 				task.updateUI([{"@floatBar":[button(task.nextButton,0)]}]);
 		}
+		
+		
+		
 	},
 	
 	// add two radio buttons to each displayed record
