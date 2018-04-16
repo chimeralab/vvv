@@ -499,6 +499,8 @@ var task = {
 		///// ALL TRIALS /////
 		//////////////////////
 		else  if(element in datasets){
+			task.nextButton=nextButtons[datasetOrder.indexOf(element)];
+			task.currentResponses=new Array(datasets[element].length);
 			task.updateUI(null);
 			task.updateUI([
 				{"@floatBar":[
@@ -522,8 +524,17 @@ var task = {
 					[ task.formatRow(datasets[element][i], myHighlights[element].indexOf(i) ) ] 
 				}]);
 			}
+			
 		}
-		
+				
+		//added 5 lines below; also added line 506 to create the task.currentResponses array; also changed the button to be disabled to start, and enabled when all responses are there
+		else if(task.currentResponses && element.constructor===Array){		//
+			task.currentResponses[element[1]-1]=value;
+			if(Math.min.apply(null,task.currentResponses)===1)
+				task.updateUI([{"@floatBar":[button(task.nextButton,1)]}]);
+			else
+				task.updateUI([{"@floatBar":[button(task.nextButton,0)]}]);
+		}
 	},
 	
 	// add two radio buttons to each displayed record
