@@ -1,0 +1,493 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<html><head>
+<link rel="stylesheet" href="stap.css"></link>
+
+<script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBtfGeqBIXdFmaFkmjY004cvb3SWOKyy-c",
+    authDomain: "vvve-56dc2.firebaseapp.com",
+    databaseURL: "https://vvve-56dc2.firebaseio.com",
+    projectId: "vvve-56dc2",
+    storageBucket: "vvve-56dc2.appspot.com",
+    messagingSenderId: "441698672673"
+  };
+  firebase.initializeApp(config);
+</script>
+
+<!-- <script src="https://rawgit.com/vdv7/stapjs/master/stap.js"></script> -->
+<script src="stap.js"></script>
+<script>
+
+var datasetOrder=['Practice Trials','Batch 1','Batch 2','Batch 3','Batch 4'];
+var nextButtons=['Experimental Trials','Batch 2','Batch 3','Batch 4','Submit'];
+
+var TIME_ON_SHIPLEY = 300;
+
+var myHighlights ={
+'Practice Trials':[0,3,4],
+	// variety 4 
+'Batch 1':[2,3,4,8,10,12,19,22,24],
+	// variety 3
+'Batch 2':[2,3,10,15,17,18,19,30,32,34],
+	// variety 2
+'Batch 3':[4,7,18,21,24,27,31,34,36,37],
+	// variety 1
+'Batch 4':[5,11,13,17,21,24,27,29,33,37]
+};
+
+
+var myRules={
+
+		'Practice Trials':["<p class='redtext'>EVENTS ARE THREATS IF THEY <br>MEET ALL FOUR CRITERIA:<\p>",
+						  "Time Stamp between 0:00 and 6:00 hours",
+						  "Source Port < 80 or > 5,000",
+						  "Destination Countries: Russia, China",
+						  "Alerts including suspicious, encrypted, exploit, or virus"
+					],
+
+		'Batch 1':[	
+						"<p class='bluetext'>EVENTS ARE THREATS IF THEY <br>MEET ONE OF THE BELOW CATEGORIES<\p>",
+						"Ports > 5000, 0:00 - 3:00 hours, virus, and Russia OR",
+						"Ports < 80, 3:01 - 6:00 hours, virus, and Russia OR",
+						"Ports < 80, 0:00 - 3:00 hours, exploit, and China OR",
+						"Ports > 5000, 3:01 - 6:00 hours, exploit, and China OR",
+						"Ports < 80, 0:00 - 3:00 hours, suspicious, and Russia OR",
+						"Ports > 5000, 3:01 - 6:00 hours, suspicious, and Russia OR",
+						"Ports > 5000, 0:00 - 3:00 hours, encrypted, and China OR",
+						"Ports < 80, 3:01 - 6:00 hours, encrypted, and China"
+					],
+					
+		'Batch 2':[	
+						"<p class='orangetext'>EVENTS ARE THREATS IF THEY <br>MEET THE BELOW CRITERIA <\p>",
+						"Ports > 5000, 0:00 - 3:00 hours, exploit/encrypted and China OR",
+						"Ports < 80, 3:01 - 6:00 hours, exploit/encrypted and China OR",
+						"Ports < 80, 0:00 - 3:00 hours, suspicious/virus, and Russia OR",
+						"Ports > 5000, 3:01 - 6:00 hours, suspicious/virus, and Russia"
+					],
+					
+		'Batch 3':[	
+						"<p class='greentext'>EVENTS ARE THREATS IF THEY <br>MEET THE BELOW CRITERIA <\p>",		
+						"Time Stamp between 0:00 and 5:00 hours",
+						"Source Port < 80 or > 5,000",
+						"Alerts including suspicious/virus if country is Russia OR",
+						"Alerts including exploit/encrypted if country is China"
+					],
+					
+		'Batch 4':[ 	
+						"<p class='redtext'>EVENTS ARE THREATS IF THEY <br>MEET THE BELOW CRITERA <\p>",
+						"Time Stamp between 0:00 and 6:00 hours",
+						"Source Port < 80 or > 5,000",
+						"Destination Countries: Russia, China",
+						"Alerts including suspicious, encrypted, exploit, or virus"
+					]
+
+};
+
+var datasets={
+
+	'Practice Trials':[
+				["11:18",69,"Russia","FTP - Suspicious MGET Command"],
+				["21:50",513,"Chile","Suspicious Browser Redirect"],
+				["12:12",80,"China","FTP CWD Root directory transversal attempt"],
+				["4:20",42,"Hungary","FTP - Suspicious MGET Command"],
+				["19:26",9898,"China","ET TROJAN Qhosts Trojan Check-in"]
+	],
+	
+	'Batch 1':[
+	// variety 4 
+				["21:42",563,"Russia","FTP - Suspicious MGET Command"],
+				["4:47",21,"Russia","INFO web virus 0x0 gif attempt"],
+				["21:27",53,"Russia","FTP CWD Root directory virus attempt"],
+				["5:31",7,"Russia","ET TROJAN Qhosts Trojan Check-in"],
+				["0:21",42,"Romania","Suspicious Browser Redirect"],
+				["0:14",5554,"Russia","ET TROJAN Virus.Win32.Sality.aa Checkin"],
+				["4:23",9119,"China","Javascript Exploit CVE-2012-09-10a"],
+				["2:13",3074,"India","Rar Encrypted File Transfer"],
+				["4:21",3074,"United States","MULTIMEDIA Quicktime User Agent exploit"],
+				["2:45",42,"China","MULTIMEDIA Quicktime User Agent exploit"],
+				["1:57",5098,"China","INFO web virus 0x0 gif attempt"],
+				["1:33",42,"China","FTP STOR overflow attempt.exploit"],
+				["2:50",53,"India","MULTIMEDIA Quicktime User Agent exploit"],
+				["0:46",7,"China","FTP STOR overflow attempt.exploit"],
+				["5:40",5234,"Russia","INFO Connection Closed MSG from Suspicious Port"],
+				["2:50",6257,"China","MULTIMEDIA Quicktime User Agent exploit"],
+				["2:20",5234,"China","ET TROJAN Sality - Encrypted Opera User-Agent"],
+				["4:47",53,"Russia","ET TROJAN Virus.Win32.Sality.aa Checkin"],
+				["0:46",7,"Russia","ET TROJAN W32/Sality Executable Pack Digital Signature ASCII Marker"],
+				["5:31",6257,"Russia","INFO Connection Closed MSG from Suspicious Port"],
+				["0:43",69,"China","Javascript Exploit CVE-2012-09-10a"],
+				["4:17",69,"Russia","INFO web virus 0x0 gif attempt"],
+				["0:22",6666,"Russia","NETBIOS SMB-DS winreg access"],
+				["0:57",3074,"United States","INFO web virus 0x0 gif attempt"],
+				["5:44",21,"China","ET TROJAN Sality Variant Checkin Activity"],
+				["4:47",80,"Russia","FTP - Suspicious MGET Command"],
+				["0:15",5098,"Russia","MULTIMEDIA Quicktime User Agent exploit"],
+				["2:48",70,"Russia","Suspicious Browser Redirect"],
+				["5:18",7,"Russia","FTP CWD Root directory virus attempt"],
+				["3:45",6666,"China","MULTIMEDIA Quicktime User Agent exploit"],
+				["1:28",5098,"China","Chat Encrypted Yahoo IM Message"],
+				["1:41",21,"China","Javascript Exploit CVE-2012-09-10a"],
+				["4:59",5234,"Russia","FTP - Suspicious MGET Command"],
+				["3:13",443,"Canada","MULTIMEDIA Quicktime User Agent exploit"],
+				["2:26",80,"China","ET TROJAN Virus.Win32.Sality.aa Checkin"],
+				["0:23",9119,"Russia","ET TROJAN Virus.Win32.Sality.aa Checkin"],
+				["20:58",70,"Chile","INFO Connection Closed MSG from Suspicious Port"],
+				["5:52",80,"China","FTP - Suspicious MGET Command"],
+				["0:45",3689,"Russia","ET TROJAN Sality - Encrypted Opera User-Agent"],
+				["0:49",21,"Russia","INFO Connection Closed MSG from Suspicious Port"]
+	],
+	
+	'Batch 2':[
+	// variety 3 
+				["0:55",42,"China","Chat Encrypted Yahoo IM Message"],
+				["5:12",53,"Russia","FTP - Suspicious MGET Command"],
+				["1:34",5554,"China","INFO Connection Closed MSG from Suspicious Port"],
+				["2:42",5098,"Russia","Rar Encrypted File Transfer"],
+				["3:22",7,"Russia","Suspicious Browser Redirect"],
+				["4:14",69,"Russia","INFO Connection Closed MSG from Suspicious Port"],
+				["3:22",5234,"Russia","Javascript Exploit CVE-2012-09-10a"],
+				["2:19",5234,"Russia","ET TROJAN Virus.Win32.Sality.aa Checkin"],
+				["5:16",70,"Russia","INFO Connection Closed MSG from Suspicious Port"],
+				["4:47",2302,"China","MULTIMEDIA Quicktime User Agent exploit"],
+				["4:38",6257,"China","ET TROJAN Sality - Encrypted Opera User-Agent"],
+				["0:18",21,"China","Rar Encrypted File Transfer"],
+				["3:46",6257,"China","Javascript Exploit CVE-2012-09-10a"],
+				["2:16",80,"United States","Rar Encrypted File Transfer"],
+				["1:10",69,"China","FTP STOR overflow attempt.exploit"],
+				["1:19",70,"Russia","IRC Command, Control, and Scanning Tool Download"],
+				["0:58",69,"China","Chat Encrypted Yahoo IM Message"],
+				["0:46",9119,"Russia","Suspicious Browser Redirect"],
+				["5:44",443,"Russia","MULTIMEDIA Quicktime User Agent exploit"],
+				["1:12",5554,"China","ET TROJAN Virus.Win32.Sality.aa Checkin"],
+				["3:34",6666,"China","MULTIMEDIA Quicktime User Agent exploit"],
+				["3:23",69,"Russia","Suspicious Browser Redirect"],
+				["14:56",70,"China","NETBIOS SMB-DS winreg access"],
+				["0:43",1725,"Russia","INFO web virus 0x0 gif attempt"],
+				["3:54",21,"United States","FTP STOR overflow attempt.exploit"],
+				["0:35",5234,"Chile","ET TROJAN Virus.Win32.Sality.aa Checkin"],
+				["4:52",5098,"China","FTP STOR overflow attempt.exploit"],
+				["0:58",5554,"Russia","INFO Connection Closed MSG from Suspicious Port"],
+				["10:57",6257,"China","FTP CWD Root directory virus attempt"],
+				["5:58",5234,"China","ET TROJAN Sality - Encrypted Opera User-Agent"],
+				["12:34",5098,"India","FTP - Suspicious MGET Command"],
+				["5:13",6666,"China","Javascript Exploit CVE-2012-09-10a"],
+				["9:49",21,"Russia","IRC Command, Control, and Scanning Tool Download"],
+				["2:20",42,"China","FTP STOR overflow attempt.exploit"],
+				["12:44",53,"United States","FTP - Suspicious MGET Command"],
+				["1:57",9119,"Chile","Javascript Exploit CVE-2012-09-10a"],
+				["0:59",5234,"Russia","FTP - Suspicious MGET Command"],
+				["8:56",80,"China","ET TROJAN Sality - Encrypted Opera User-Agent"],
+				["0:33",5098,"Russia","INFO Connection Closed MSG from Suspicious Port"],
+				["5:22",53,"Russia","INFO web virus 0x0 gif attempt"]
+
+	],
+	
+	'Batch 3':[
+		// variety 2
+				["5:28",5234,"China","Chat Encrypted Yahoo IM Message"],
+				["4:21",7,"Russia","ET TROJAN Virus.Win32.Sality.aa Checkin"],
+				["23:13",42,"Russia","Suspicious Browser Redirect"],
+				["2:23",5098,"Russia","FTP - Suspicious MGET Command"],
+				["17:57",9119,"Russia","FTP Satan Scan"],
+				["5:28",80,"China","Javascript Exploit CVE-2012-09-10a"],
+				["4:19",5098,"Russia","ET TROJAN Virus.Win32.Sality.aa Checkin"],
+				["17:23",80,"China","INFO Connection Closed MSG from Suspicious Port"],
+				["3:51",5098,"Russia","FTP CWD Root directory virus attempt"],
+				["4:55",6666,"China","MULTIMEDIA Quicktime User Agent exploit"],
+				["5:33",5554,"China","MULTIMEDIA Quicktime User Agent exploit"],
+				["4:36",7,"Russia","INFO web virus 0x0 gif attempt"],
+				["2:27",5554,"Russia","FTP CWD Root directory virus attempt"],
+				["5:48",5098,"China","Rar Encrypted File Transfer"],
+				["7:56",80,"Russia","FTP STOR overflow attempt.exploit"],
+				["3:49",70,"United States","ET TROJAN Sality Variant Downloader Activity"],
+				["1:43",80,"Russia","Suspicious Browser Redirect"],
+				["0:49",5098,"Canada","FTP STOR overflow attempt.exploit"],
+				["12:54",7,"Russia","IRC Command, Control, and Scanning Tool Download"],
+				["7:36",80,"China","MULTIMEDIA Quicktime User Agent exploit"],
+				["3:46",80,"China","FTP Satan Scan"],
+				["18:51",80,"Russia","FTP - Suspicious MGET Command"],
+				["4:28",6257,"Russia","ET TROJAN Virus.Win32.Sality.aa Checkin"],
+				["5:56",6666,"China","ET TROJAN Sality - Encrypted Opera User-Agent"],
+				["7:36",21,"Russia","Suspicious Browser Redirect"],
+				["2:14",6257,"China","ET TROJAN Sality - Encrypted Opera User-Agent"],
+				["3:51",5554,"Russia","FTP CWD Root directory virus attempt"],
+				["2:31",6666,"China","FTP CWD Root directory virus attempt"],
+				["4:35",70,"China","Javascript Exploit CVE-2012-09-10a"],
+				["0:27",5554,"Russia","Chat Encrypted Yahoo IM Message"],
+				["9:39",995,"China","Javascript Exploit CVE-2012-09-10a"],
+				["3:23",445,"Russia","FTP - Suspicious MGET Command"],
+				["0:17",5234,"Russia","Suspicious Browser Redirect"],
+				["0:27",5098,"Russia","FTP - Suspicious MGET Command"],
+				["3:51",80,"Russia","Suspicious Browser Redirect"],
+				["1:24",7,"China","Javascript Exploit CVE-2012-09-10a"],
+				["2:15",53,"Russia","FTP - Suspicious MGET Command"],
+				["3:11",6666,"China","XMLHttpRequest attempt"],
+				["4:18",70,"China","Chat Encrypted Yahoo IM Message"],
+				["17:23",1214,"China","Chat Encrypted Yahoo IM Message"]
+	],
+	
+	'Batch 4':[
+			// variety 1
+				["2:23",7,"Russia","Rar Encrypted File Transfer"],
+				["0:22",5234,"China","Chat Encrypted Yahoo IM Message"],
+				["2:11",7,"Russia","FTP STOR overflow attempt.exploit"],
+				["1:37",9119,"Russia","MULTIMEDIA Quicktime User Agent exploit"],
+				["1:54",9119,"China","ET TROJAN Sality - Encrypted Opera User-Agent"],
+				["2:23",7,"Hungary","ET TROJAN Sality Variant Checkin Activity"],
+				["20:16",9119,"China","Javascript Exploit CVE-2012-09-10a"],
+				["5:24",6666,"China","ET TROJAN Sality Variant Checkin Activity"],
+				["2:11",7,"Russia","ET TROJAN Virus.Win32.Sality.aa Checkin"],
+				["5:24",70,"China","ET TROJAN Virus.Win32.Sality.aa Checkin"],
+				["24:12",42,"China","Chat Encrypted Yahoo IM Message"],
+				["7:50",5554,"Russia","ET TROJAN Sality Variant Checkin Activity"],
+				["0:14",9119,"China","FTP - Suspicious MGET Command"],
+				["3:35",443,"United States","Rar Encrypted File Transfer"],
+				["3:26",21,"United States","FTP Satan Scan"],
+				["2:31",42,"China","INFO web virus 0x0 gif attempt"],
+				["3:31",9119,"China","INFO web virus 0x0 gif attempt"],
+				["1:54",70,"China","FTP STOR overflow attempt.exploit"],
+				["24:19",42,"Russia","Javascript Exploit CVE-2012-09-10a"],
+				["0:56",5098,"Russia","Javascript Exploit CVE-2012-09-10a"],
+				["1:28",5554,"Russia","ET TROJAN Sality - Encrypted Opera User-Agent"],
+				["3:18",7,"United States","ET TROJAN Sality - Encrypted Opera User-Agent"],
+				["1:38",70,"Russia","Rar Encrypted File Transfer"],
+				["16:18",53,"Romania","ET TROJAN Sality - Encrypted Opera User-Agent"],
+				["15:23",139,"China","Chat Encrypted Yahoo IM Message"],
+				["2:39",443,"Russia","Chat Encrypted Yahoo IM Message"],
+				["4:13",5234,"China","FTP - Suspicious MGET Command"],
+				["8:20",42,"Russia","ET TROJAN W32/Sality Executable Pack Digital Signature ASCII Marker"],
+				["2:11",80,"Hungary","Rar Encrypted File Transfer"],
+				["4:20",5554,"China","ET TROJAN Sality Variant Checkin Activity"],
+				["4:20",21,"Russia","Rar Encrypted File Transfer"],
+				["2:49",9119,"China","FTP CWD Root directory virus attempt"],
+				["21:48",80,"Russia","FTP STOR overflow attempt.exploit"],
+				["0:42",80,"Russia","Chat Encrypted Yahoo IM Message"],
+				["0:53",5098,"Russia","Rar Encrypted File Transfer"],
+				["5:49",5554,"India","INFO web virus 0x0 gif attempt"],
+				["9:57",9119,"Russia","ET TROJAN Qhosts Trojan Check-in"],
+				["0:14",6666,"Canada","FTP CWD Root directory virus attempt"],
+				["2:29",42,"Russia","Rar Encrypted File Transfer"],
+				["1:26",42,"China","ET TROJAN Sality - Encrypted Opera User-Agent"]
+	]
+};
+
+
+
+function shuffleBatches() {
+	var a=['Batch 1','Batch 2','Batch 3','Batch 4']
+	var j, x, i;
+	for (i = a.length - 1; i > 0; i--) {
+		j = Math.floor(Math.random() * (i + 1));
+		x = datasets[a[i]];
+		datasets[a[i]] = datasets[a[j]];
+		datasets[a[j]] = x;
+		x = myHighlights[a[i]];
+		myHighlights[a[i]] = myHighlights[a[j]];
+		myHighlights[a[j]] = x;
+		x = myRules[a[i]];
+		myRules[a[i]] = myRules[a[j]];
+		myRules[a[j]] = x;
+	}
+}
+
+
+function button(name,enabled){
+	var b={['@'+name]:false};
+	if(enabled!==undefined)b.eB=enabled;
+	return b;
+}
+
+
+
+var task = {
+	
+	////////////////////////
+	/////// CONSENT! ///////
+	////////////////////////
+	start: function(){
+	    shuffleBatches();
+		task.updateUI( {
+			template:"clairescratch.css",
+			require:{ options:['T','R','title','eT','select','head','patronym','scroll','time','emp'], types:['table'] },
+			client:["userAgent","screen"],
+			date:(new Date()).toString('YYYYMDhhmmss')
+		} );
+		task.updateUI(["<h1>Informed Consent Agreement</h1>",
+			"Please read this consent agreement carefully before you decide to participate in the study.",
+			"Purpose of the research study: The purpose of the study is to investigate how humans recognize patterns of interest.",
+			"What you will do in the study: If you choose to participate in this study, you will be asked to identify malicious versus benign patterns in a series of datasets using pre-established rules. The information you provide is anonymous and you are free to stop the experiment at any time.",
+			"Time required: The study will require about 25-30 minutes of your time.",
+			"Risks: There are no risks associated with this study. The information you will provide is not sensitive and a loss of confidentiality poses no threats.",
+			"Benefits: There are no direct benefits to you for participating in this research study. The study may help us understand what factors impair pattern recognition.",
+			"Confidentiality: Participant data will be stored on Amazon Firebase, a secure cloud-based platform. Only mTurk-assigned worker IDs---which consist of random characters (e.g. A1235875436)---will be stored for payment purposes. No personally identifying information (e.g., names, emails, addresses) will be collected. The information that you give in the study will be handled confidentially. Your data will be anonymous which means that your name will not be collected or linked to the data.",
+			"Voluntary participation: Your participation in the study is completely voluntary.",		
+			"Right to withdraw from the study: You have the right to withdraw from the study at any time without penalty. How to withdraw from the study: If you want to withdraw from the study, you may simply close the study. There is no penalty for withdrawing. You will still receive full credit for the study. If you would like to withdraw after your materials have been submitted, please contact Claire La Fleur (claire.g.lafleur.ctr@mail.mil).",	
+			"Payment: You will receive a base payment of $2.50 for participating in the study and a bonus of $1.50 for scoring above 70%.",	
+			"If you have questions about the study, contact:",	
+			"Claire-Genevieve La Fleur (claire.g.lafleur.ctr@mail.mil)",	
+			"Bldg. 519, Aberdeen Proving Ground",	
+			"U.S. Army Research Laboratory, Aberdeen, MD 21005",						
+			button("I Consent") ]);
+	},
+
+	/////////////////////////////////
+	/////// ALL OTHER SCREENS ///////
+	/////////////////////////////////
+	userAction: function(time,element,value){
+		console.log(time,element,value);
+		
+
+		////////////////////////////////////
+		/////   SHIPLEYS INSTRUCTIONS  /////
+		////////////////////////////////////
+		if(element=='I Consent'){
+			task.updateUI(null);
+			task.updateUI(["<h1>Shipley's Abstractions</h1>", "Fill in the missing letter, number, or word to complete each sequence. Write only one character in each blank space.", "<p class='redtext'>YOU WILL HAVE FIVE MINUTES TO COMPLETE THE TASK<\p>"
+				, button("Begin Task") 
+			]);
+		}
+		
+	
+		
+		/////////////////////////////
+		/////   SHIPLEYS TASK   /////
+		/////////////////////////////
+		if(element=='Begin Task'){
+			task.updateUI(null);
+			task.updateUI([
+				{"@floatBar":[
+					{'@Time Remaining':TIME_ON_SHIPLEY,'time':'m:s'}, 
+					{'@Time Remaining':0,'T':TIME_ON_SHIPLEY,'R':4},
+					{'@Instructions':"Fill in the missing letter,<br> number, or word to complete each<br> sequence. Write only one character <br> in each blank space."},
+					{"@Complete":false}
+				], title:''}
+			]);
+		task.updateUI([   {'@Shipley':[
+			["Pattern", "Answer Here (*'s = # of Letters/Numbers Needed)"],
+			['1 2 3 4 5 _',{"@":"*",eT:2}], 
+			['White black short long down _ _',{"@":"**",eT:2}],
+			['AB BC CD D_',{"@":"*",eT:2}],  
+			['Z Y X W V U _',{"@":"*",eT:2}],
+			['1 2 3 2 1 2 3 4 3 2 3 4 5 4 3 4 5 6 _ _',{"@":"**",eT:2}],
+			['NE/SW SE/NW E/W N/ _',{"@":"*",eT:2}],  
+			['Escape scape cape _ _ _',{"@":"***",eT:2}],  
+			['Oh ho rat tar mood _ _ _ _',{"@":"****",eT:2}],  
+			['A Z B Y C X D _ _',{"@":"**",eT:2}],  
+			['Tot tot bard drab 537 _ _ _',{"@":"***",eT:2}],  
+			['Mist is wasp as pint in tone’ _ _',{"@":"**",eT:2}],  
+			['57326 73265 32657 26573 _ _ _ _ _',{"@":"*****",eT:2}],  
+			['Knit in spud up both to stay _ _',{"@":"**",eT:2}],  
+			['Scotland landscape scape goat  _ _ _ _ ee',{"@":"****",eT:2}],  
+			['Surgeon 1234567 snore 17635 rogue _ _ _ _ _',{"@":"*****",eT:2}],  
+			['Tam tan rib rid rat raw hip _ _ _',{"@":"***",eT:2}],
+			['Tar pitch throw saloon bar rod fee tip end plank _ _ _ _ _ meals',{"@":"*****",eT:2}],  
+			['3124 82 73 154 46 13 _',{"@":"*",eT:2}],  
+			['Lag leg pen pin big bog rob _ _ _',{"@":"***",eT:2}],  
+			['Two w four r one o three _',{"@":"*",eT:2}]
+				] , type:'table', head:1,select:1,patronym:1, scroll:1
+				}])	
+		}
+			
+		
+
+		////////////////////////
+		///// INSTRUCTIONS /////
+		////////////////////////
+		if(element=='Complete' || element=='Time Remaining'){
+			task.updateUI(null);
+			task.updateUI(["<h1>Instructions</h1>",
+				"In the following task, will see several tables, or batches, that contain a series of cyber events - some of them are benign and some represent potential threats. Your job is to identify all the events in each batch that represent a credible cyber threat using the rules provided", "RULES: You will be shown a set of rules at the top of the screen for each batch. If a particular event meet the criteria for a threat as described in the rules, then you should mark it as a concern. When you have identified all the credible threats in a batch, click submit at the top of the screen to move on to the next batch.", "HINTS: Some of the events will be highlighted; these are events that an automated intrusion detection system has identified as suspicious activity; the performance of the IDS is ALWAYS better than chance", "<p class='redtext'>The rules and the accuracy of the intrusion detection system MAY CHANGE between batches.<p class='redtext'>", "You have unlimited time to complete the task.<br><br>"
+				, button("Practice Trials") 
+			]);
+		}
+		
+		///////////////////////////////////////////////	
+		///////    Reminder of Instructions!    ///////	
+		///////////////////////////////////////////////	
+		else  if(element=='Experimental Trials'){
+			task.updateUI(null);
+			task.updateUI(["<h1>Instructions Reminder</h1>",
+				"You've completed your practice trials! As a reminder, you will see several tables, or batches, that contain a series of cyber events - some of them are benign and some represent potential threats. Your job is to identify all the events in each batch that represent a credible cyber threat using the rules provided", "RULES: You will be shown a set of rules at the top of the screen for each batch. If a particular event meet the criteria for a threat as described in the rules, then you should mark it as a concern. When you have identified all the credible threats in a batch, click submit at the top of the screen to move on to the next batch.", "HINTS: Some of the events will be highlighted; these are events that an automated intrusion detection system has identified as suspicious activity; the performance of the IDS is ALWAYS better than chance", "<p class='redtext'>The rules and the accuracy of the intrusion detection system MAY CHANGE between batches.<p class='redtext'>", "You have unlimited time to complete the task.<br><br>"
+				, button("Batch 1") 
+			]);
+		}
+		
+		
+		////////////////////////
+		////// DEBRIEFING //////
+		////////////////////////
+		else if(element=='Submit'){
+			task.updateUI(null);
+			task.updateUI([{'@Your MTurk validation number is':(new Date()).getTime()}])
+			task.updateUI(["<h1>Debriefing</h1>", 
+				"To effectively defend against cyber security threats, one must consider both the technological and human dimensions (Von Solms, 2013; Kraemer, 2009). The defense analyst performs a crucial role by anticipating, understanding, and coordinating an efficient and successful response to ongoing cyber threats. This study was concerned with how certain qualities of the data environment make a cyber defenders job more difficult. In the present experiment, we were interesting in evaluating out how increasing the amount of information to process, decreasing the time to make a decision, decreasing the veracity of the information presented, and increasing the variety of information available impacted your ability to identify threatening patterns in a batch of cyber events. In our future work, we hope to develop agents to help reduce the impacts of these factors on the human cyber defender.",
+				"Our hope is to better understand how these factors impact cyber defender performance so that we can assist soldiers in identifying and eliminating cyber threats. If you are interested in reading more about this type of work, please review the following citations.",
+				"What is I want to know more?",
+				"Buchler, N., Fitzhugh, S. M., Marusich, L. R., Ungvarsky, D. M., Lebiere, C., & Gonzalez, C. (2016). Mission command in the age of network-enabled operations: Social network analysis of information sharing and situation awarenss. Frontiers in Psychology, 7, 1-15. ", 
+				"Kraemer, S., Carayon, P., & Clem, J. (2009). Human and organization factor in computer and information security: Pathways to vulnerabilities. Computers & Security, 28, 509-520. ",
+				"If you have any concerns with your rights as a participant in this experiment, please contact Claire La Fleur, Primary Investigator, Army Research Lab at 410-306-1249 or (claire.g.lafleur.ctr@mail.mil)",
+				"Thank you again for your participation."
+			]);
+			////////////////////////
+			///// FINISH TASK! /////		
+			////////////////////////
+			task.end();
+		}
+
+		//////////////////////
+		///// ALL TRIALS /////
+		//////////////////////
+		else  if(element in datasets){
+			task.nextButton=nextButtons[datasetOrder.indexOf(element)];
+			task.currentResponses=new Array(datasets[element].length);
+			task.updateUI(null);
+			task.updateUI([
+				{"@floatBar":[
+					{'@':["<p class='yellowhighlight'>HIGHLIGHTED EVENTS ARE IDENTIFIED AS THREATS<br><br>BY AN INTRUSTION DETECTION SYSTEM. HOWEVER, <br><br>  <strong>THESE IDENTIFICATIONS MAY NOT BE ACCURATE.<\p>"]},
+						{'@':myRules[element]},
+					button(task.nextButton,0)
+				], title:''}, 
+				{['@'+element]:[
+				["Time Stamp","Source Port","Destination Countries","Alert","Threat","No Threat"], 
+				] , type:'table', head:1,patronym:1, scroll:1}
+			]);
+
+			for(var i=0;i<datasets[element].length;++i){
+				console.log([i, myHighlights[element], myHighlights[element].indexOf(i)] );
+				task.updateUI([   {['@'+element]:
+					[ task.formatRow(datasets[element][i], myHighlights[element].indexOf(i) ) ] 
+				}]);
+			}
+		}
+		
+		//added 5 lines below; also added line 506 to create the task.currentResponses array; also changed the button to be disabled to start, and enabled when all responses are there
+		else if(task.currentResponses && element.constructor===Array){		//
+			task.currentResponses[element[1]-1]=value;
+			if(Math.min.apply(null,task.currentResponses)===1)
+				task.updateUI([{"@floatBar":[button(task.nextButton,1)]}]);
+			else
+				task.updateUI([{"@floatBar":[button(task.nextButton,0)]}]);
+		}
+		
+		
+		
+	},
+	
+	// add two radio buttons to each displayed record
+	formatRow:function(rec,highlight){
+		console.log(highlight);
+		rec.push(button(''));
+		rec.push(button(''));
+		return {'@':rec,select:1,emp:(highlight>-1)?10:0};;
+	}
+	
+}
+
+logToFirebase();
+
+</script>
+</head><body /></html>
